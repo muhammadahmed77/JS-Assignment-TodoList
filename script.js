@@ -78,13 +78,21 @@ let renderTodos = () => {
     todos.forEach((todo) => {
         let todoDiv = document.createElement("div");
         todoDiv.className = "todo";
+        todoDiv.id = todo.id;
+        todoDiv.innerText = todo.text;
 
         if (todo.isCompleted) {
             todoDiv.className += " done";
+        } else {
+            // NEW: the green tick is drawn with the item, only if it's not done
+            let doneBtn = document.createElement("button");
+            doneBtn.innerText = "✔";
+            doneBtn.className = "done-btn";
+            doneBtn.addEventListener("click", () => {
+                doneTodo(todo.id);
+            });
+            todoDiv.appendChild(doneBtn);
         }
-
-        todoDiv.id = todo.id;
-        todoDiv.innerText = todo.text;
 
         todoDiv.addEventListener("click", () => {
             showActions(todoDiv);
@@ -93,9 +101,8 @@ let renderTodos = () => {
         todoListElm.appendChild(todoDiv);
     });
 };
-
 let showActions = (todoDiv) => {
-    if (todoDiv.querySelector("button")) return;
+    if (todoDiv.querySelector(".del-btn")) return;   // CHANGED
 
     let isDone = todoDiv.classList.contains("done");
 
@@ -106,17 +113,11 @@ let showActions = (todoDiv) => {
         deleteTodo(todoDiv.id);
     });
 
+    // done todos get only Delete
     if (isDone) {
         todoDiv.appendChild(deleteBtn);
         return;
     }
-
-    let doneBtn = document.createElement("button");
-    doneBtn.innerText = "✔";
-    doneBtn.className = "done-btn";
-    doneBtn.addEventListener("click", () => {
-        doneTodo(todoDiv.id);
-    });
 
     let editBtn = document.createElement("button");
     editBtn.innerText = "Edit";
@@ -125,7 +126,6 @@ let showActions = (todoDiv) => {
         editTodo(todoDiv.id);
     });
 
-    todoDiv.appendChild(doneBtn);
     todoDiv.appendChild(editBtn);
     todoDiv.appendChild(deleteBtn);
 };
